@@ -40,6 +40,20 @@ exports.getUsers = async (req, res) => {
         createdAt: { $first: '$createdAt' },
         updatedAt: { $first: '$updatedAt' }
       } },
+      { $project: {
+        username: 1,
+        email: 1,
+        profile: 1,
+        products: {
+          $filter: {
+            input: '$products',
+            as: 'product',
+            cond: { $ne: [ "$$product", {} ] }
+          }
+        },
+        createdAt: 1,
+        updatedAt: 1
+      } },
       { $sort: { _id: 1 } }
     ]);
 
@@ -89,6 +103,20 @@ exports.getUser = async (req, res) => {
         } },
         createdAt: { $first: '$createdAt' },
         updatedAt: { $first: '$updatedAt' }
+      } },
+      { $project: {
+        username: 1,
+        email: 1,
+        profile: 1,
+        products: {
+          $filter: {
+            input: '$products',
+            as: 'product',
+            cond: { $ne: [ "$$product", {} ] }
+          }
+        },
+        createdAt: 1,
+        updatedAt: 1
       } }
     ]);
     if (data.length) {
