@@ -82,7 +82,7 @@ const childProcessController = require('../controllers/childProcessController');
  *        $ref: '#/definitions/Error'
  * */
 router.get('/api/login', loginController.jwtLogin);
-router.get('/api/phpChildProcess', childProcessController.executePHP);
+router.get('/api/phpChildProcess/:name', childProcessController.executePHP);
 router.use('/api', auth.jwtAuth, require('./apiRoutes'));
 // router.use('/api', auth.checkJwt, auth.checkScopes, require('./apiRoutes'))
 router.use('/', require('./webRoutes'));
