@@ -4,6 +4,6 @@ if (isset($argc)) {
 		echo "Hello " . $argv[$i] . "!\n";
 	}
 } else {
-	echo "argc and argv disabled\n";
+	echo "argc and argv disabled!\n";
 }
 ?>
