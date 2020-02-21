@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const jwt2 = require('express-jwt');
+const { verify } = require('jsonwebtoken');
+const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 const { model: mongooseModel } = require('mongoose');
@@ -29,7 +29,7 @@ exports.custom = async (req, res, next) => {
 exports.jwtAuth = (req, res, next) => {
   if (req.headers.authorization) {
     try {
-      let decodedToken = jwt.verify(req.headers.authorization.split(' ')[1], process.env.APP_KEY);
+      let decodedToken = verify(req.headers.authorization.split(' ')[1], process.env.APP_KEY);
       if (decodedToken) {
         req.userId = decodedToken.userId;
         next();
@@ -78,7 +78,7 @@ exports.sqlAuthorize = async (req, res, next) => {
   }
 }
 
-exports.checkJwt = jwt2({
+exports.checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: process.env.CAN_CACHE,
     rateLimit: process.env.CAN_RATE_LIMIT,
