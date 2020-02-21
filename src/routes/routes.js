@@ -84,8 +84,9 @@ const childProcessController = require('../controllers/childProcessController');
 router.get('/api/login', loginController.jwtLogin);
 router.get('/api/phpChildProcess/php/:name', childProcessController.executePHP);
 router.get('/api/phpChildProcess/java/:name', childProcessController.executeJar);
-router.use('/api', auth.jwtAuth, require('./apiRoutes'));
-// router.use('/api', auth.checkJwt, auth.checkScopes, require('./apiRoutes'))
+// router.use('/api', auth.jwtAuth, require('./apiRoutes'));
+router.use('/api', auth.checkJwt, auth.checkScopes, require('./apiRoutes'))
+
 router.use('/', require('./webRoutes'));
 
 // Handles 404 requests
