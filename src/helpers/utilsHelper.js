@@ -21,14 +21,14 @@ exports.responseObj = (errMsg, successStatus, data, paginated) => {
 
   if (paginated) {
     responseObj.data = data.docs;
-    responseObj.page = data.page ? data.page : 1;
-    responseObj.totalDocs = data.totalDocs ? data.totalDocs : data.total;
+    responseObj.page = data.page || 1;
+    responseObj.totalDocs = data.totalDocs || data.total;
     responseObj.limit = data.limit;
-    responseObj.totalPages = data.totalPages ? data.totalPages : data.pages;
-    responseObj.hasPrevPage = data.hasPrevPage ? data.hasPrevPage : (data.page > 1 ? true : false);
-    responseObj.hasNextPage = data.hasNextPage ? data.hasNextPage : (!data.page || data.page < data.pages ? true : false);
-    responseObj.prevPage = data.prevPage ? data.prevPage : (data.page > 1 ? data.page : null);
-    responseObj.nextPage = data.nextPage ? data.nextPage : (!data.page || data.page < data.pages ? (data.page ? data.page : 2) : null);
+    responseObj.totalPages = data.totalPages || data.pages;
+    responseObj.hasPrevPage = data.hasPrevPage || (data.page > 1 ? true : false);
+    responseObj.hasNextPage = data.hasNextPage || (!data.page || data.page < data.pages ? true : false);
+    responseObj.prevPage = data.prevPage || (data.page > 1 ? data.page : null);
+    responseObj.nextPage = data.nextPage || (!data.page || data.page < data.pages ? (data.page || 2) : null);
   } else {
     responseObj.data = data.docs || data;
   }
