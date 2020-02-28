@@ -1,8 +1,11 @@
 /**
+ * Creates formatted response.
+ * 
  * @param {String} errMsg
  * @param {Boolean} successStatus
  * @param {Array or Object} data
  * @param {Boolean} paginated
+ * 
  * @returns {Object}
  */
 exports.responseObj = (errMsg, successStatus, data, paginated) => {
