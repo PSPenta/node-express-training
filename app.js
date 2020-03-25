@@ -96,8 +96,12 @@ sequelizeRelations();
 // Sequelize auto-create missing tables using sync()
 sequelize.sync()
   .then(() => {
-    app.listen(app.get('port'), () => {
+    const server = app.listen(app.get('port'), () => {
       console.info(`Find the server at: ${app.get('app URL')}`);
+    });
+    const io = require('./src/helpers/socketHelper').init(server);
+    io.on('connection', () => {
+      console.log('Client connected!');
     });
   })
   .catch(err => console.error(err));

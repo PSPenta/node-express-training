@@ -8,6 +8,7 @@ const PDFDocument = require('pdfkit');
 const { generate: generateRandomString } = require('randomstring');
 
 const { sendMail } = require('../config/mailer');
+const { getIO } = require('../helpers/socketHelper');
 const { responseObj } = require('../helpers/utilsHelper');
 
 exports.getUsers = async (req, res) => {
@@ -63,6 +64,7 @@ exports.getUsers = async (req, res) => {
     });
 
     if (users) {
+      getIO().emit('mailSend', { data: `Email was successfully sent to ${req.body.username}.` });
       return res.json(responseObj(null, true, users, true));
     } else {
       return res.status(404).json(responseObj('No users found!'));
