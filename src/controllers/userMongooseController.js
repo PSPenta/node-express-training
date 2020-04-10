@@ -64,7 +64,7 @@ exports.getUsers = async (req, res) => {
     });
 
     if (users) {
-      getIO().emit('mailSend', { data: `Email was successfully sent to ${req.body.username}.` });
+      getIO().emit('mailSend', { socket: 'Programming' });
       return res.json(responseObj(null, true, users, true));
     } else {
       return res.status(404).json(responseObj('No users found!'));
