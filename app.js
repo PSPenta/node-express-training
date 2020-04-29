@@ -16,7 +16,7 @@ require('dotenv').config();
 /**** 3rd party modules */
 
 /**** Local modules */
-const config = require('./src/config/config');
+const config = require('./src/config/configuration');
 const { mongoConnect } = require('./src/config/dbconfig/MongoDB');
 const sequelize = require('./src/config/dbconfig/SequelizeDB');
 const { configRelations: sequelizeRelations } = require('./src/helpers/sequelizeHelper');

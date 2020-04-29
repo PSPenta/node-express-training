@@ -29,6 +29,11 @@ const User = sequelize.define('user', {
   api_token_created_at: {
     type: Sequelize.DATE,
     allowNull: false
+  },
+  enabled: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
   }
 });
 
