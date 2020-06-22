@@ -2,9 +2,11 @@ const fs = require('fs');
 const path = require('path');
 
 const { hash } = require('bcrypt');
+const { validationResult } = require('express-validator');
 const { create: currentDateTime } = require('node-datetime');
 const PDFDocument = require('pdfkit');
 const { generate: generateRandomString } = require('randomstring');
+const { Op } = require('sequelize');
 
 const { sendMail } = require('../config/mailer');
 const { model } = require('../helpers/sequelizeHelper');
@@ -67,9 +69,20 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const hashedPassword = await hash(req.body.password, 256);
-    const user = await model('User').findAll({ where: { username: req.body.username } });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
+    const user = await model('User').findAll({
+      where: {
+        [Op.or]: [
+          { username: req.body.username },
+          { email: req.body.email }
+        ]
+      }
+    });
     if (!user.length) {
+      const hashedPassword = await hash(req.body.password, 256);
       const user = await model('User').create({
         username: req.body.username,
         email: req.body.email,
@@ -105,7 +118,7 @@ exports.addUser = async (req, res) => {
         return res.status(404).json(responseObj('Could not create user!'));
       }
     } else {
-      return res.status(404).json(responseObj('Username is already taken, please choose a unique one!'));
+      return res.status(404).json(responseObj('Username or email is already taken, please choose a unique one!'));
     }
   } catch (error) {
     console.error(error);
@@ -115,7 +128,18 @@ exports.addUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const user = await model('User').findAll({ where: { username: req.body.username } });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
+    const user = await model('User').findAll({
+      where: {
+        [Op.or]: [
+          { username: req.body.username },
+          { email: req.body.email }
+        ]
+      }
+    });
     if (!user.length || user[0].id == parseInt(req.params.userId)) {
       const user = await model('User').findAll({ where: { id: parseInt(req.params.userId) } });
       if (user && user.length) {
@@ -148,7 +172,7 @@ exports.updateUser = async (req, res) => {
         return res.status(404).json(responseObj('Could not update user!'));
       }
     } else {
-      return res.status(404).json(responseObj('Username is already taken, please choose a unique one!'));
+      return res.status(404).json(responseObj('Username or email is already taken, please choose a unique one'));
     }
   } catch (error) {
     console.error(error);
@@ -220,6 +244,10 @@ exports.getProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
     const product = await model('Product').create({
       name: req.body.name,
       price: req.body.price,
@@ -238,6 +266,10 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
     const product = await model('Product').update(
       {
         name: req.body.name,
@@ -275,6 +307,10 @@ exports.deleteProduct = async (req, res) => {
 
 exports.addNewProduct = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
     const user = await model('User').findAll({ where: { id: parseInt(req.params.userId) } });
     if (user.length) {
       const product = await user[0].createProduct({

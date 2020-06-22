@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { hash } = require('bcrypt');
+const { validationResult } = require('express-validator');
 const { ObjectId } = require('mongodb');
 const { model } = require('mongoose');
 const PDFDocument = require('pdfkit');
@@ -134,7 +135,16 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const data = await model('user').findOne({ username: req.body.username });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
+    const data = await model('user').findOne({
+      $or: [
+        { username: req.body.username },
+        { email: req.body.email }
+      ]
+    });
     if (!data) {
       const hashedPassword = await hash(req.body.password, 256);
       const user = await model('user').create({
@@ -167,7 +177,7 @@ exports.addUser = async (req, res) => {
         return res.status(404).json(responseObj('Something went wrong!'));
       }
     } else {
-      return res.status(404).json(responseObj('Username is already taken, please choose a unique one!'));
+      return res.status(404).json(responseObj('Username or email is already taken, please choose a unique one'));
     }
   } catch (error) {
     console.error(error);
@@ -177,7 +187,16 @@ exports.addUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const data = await model('user').findOne({ username: req.body.username });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
+    const data = await model('user').findOne({
+      $or: [
+        { username: req.body.username },
+        { email: req.body.email }
+      ]
+    });
     if (!data || data._id === new ObjectId(req.params.userId)) {
       const hashedPassword = await hash(req.body.password, 256);
       const user = await model('user').findByIdAndUpdate(req.params.userId, {
@@ -197,7 +216,7 @@ exports.updateUser = async (req, res) => {
         return res.status(404).json(responseObj('Nothing to update!'));
       }
     } else {
-      return res.status(404).json(responseObj('Username is already taken, please choose a unique one!'));
+      return res.status(404).json(responseObj('Username or email is already taken, please choose a unique one'));
     }
   } catch (error) {
     console.error(error);
@@ -259,6 +278,10 @@ exports.getUserProducts = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
     const data = await model('product').create({
       name: req.body.name,
       price: req.body.price,
@@ -277,6 +300,10 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
     const product = await model('product').findByIdAndUpdate(req.params.productId, {
       name: req.body.name,
       price: req.body.price,
@@ -295,6 +322,10 @@ exports.updateProduct = async (req, res) => {
 
 exports.addNewProduct = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json(responseObj(errors.array()));
+    }
     const userData = await model('user').findById(req.params.userId);
     if (userData) {
       const product = await model('product').create({
