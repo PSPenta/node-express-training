@@ -122,6 +122,7 @@ exports.getUser = async (req, res) => {
         updatedAt: 1
       } }
     ]);
+
     if (data.length) {
       return res.json(responseObj(null, true, data));
     } else {
@@ -139,12 +140,14 @@ exports.addUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const data = await model('user').findOne({
       $or: [
         { username: req.body.username },
         { email: req.body.email }
       ]
     });
+
     if (!data) {
       const hashedPassword = await hash(req.body.password, 256);
       const user = await model('user').create({
@@ -158,6 +161,7 @@ exports.addUser = async (req, res) => {
         password: hashedPassword,
         apiToken: generateRandomString()
       });
+
       if (user) {
         sendMail(
           req.body.email,
@@ -172,6 +176,7 @@ exports.addUser = async (req, res) => {
             Thank you for joining us. Good luck.<br>
           </p>`
         ).then(() => console.log('Email sent successfully!')).catch(err => console.error(err));
+
         return res.status(201).json(responseObj(null, true, { 'message': 'User added successfully!' }));
       } else {
         return res.status(404).json(responseObj('Something went wrong!'));
@@ -191,12 +196,14 @@ exports.updateUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const data = await model('user').findOne({
       $or: [
         { username: req.body.username },
         { email: req.body.email }
       ]
     });
+
     if (!data || data._id === new ObjectId(req.params.userId)) {
       const hashedPassword = await hash(req.body.password, 256);
       const user = await model('user').findByIdAndUpdate(req.params.userId, {
@@ -210,6 +217,7 @@ exports.updateUser = async (req, res) => {
         password: hashedPassword,
         apiToken: generateRandomString()
       }, { useFindAndModify: false });
+
       if (user) {
         return res.status(201).json(responseObj(null, true, { 'message': 'User updated successfully!' }));
       } else {
@@ -282,11 +290,13 @@ exports.createProduct = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const data = await model('product').create({
       name: req.body.name,
       price: req.body.price,
       description: req.body.description
     });
+
     if (data) {
       return res.status(201).json(responseObj(null, true, { 'message': 'Product added successfully!' }));
     } else {
@@ -304,11 +314,13 @@ exports.updateProduct = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const product = await model('product').findByIdAndUpdate(req.params.productId, {
       name: req.body.name,
       price: req.body.price,
       description: req.body.description
     }, { useFindAndModify: false });
+
     if (product) {
       return res.status(201).json(responseObj(null, true, { 'message': 'Product updated successfully!' }));
     } else {
@@ -326,6 +338,7 @@ exports.addNewProduct = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const userData = await model('user').findById(req.params.userId);
     if (userData) {
       const product = await model('product').create({
@@ -333,6 +346,7 @@ exports.addNewProduct = async (req, res) => {
         price: req.body.price,
         description: req.body.description
       });
+
       if (product) {
         userData.products.push(product);
         const user = await model('user').findByIdAndUpdate(req.params.userId, userData, { useFindAndModify: false });
@@ -361,6 +375,7 @@ exports.addNewProductImage = async (req, res) => {
         const product = await model('product').findByIdAndUpdate(req.params.productId, {
           image: req.file.location
         }, { useFindAndModify: false });
+
         if (product) {
           return res.status(201).json(responseObj(null, true, { 'message': 'Image assigned to product successfully!' }));
         } else {
@@ -415,8 +430,10 @@ exports.generatePDF = async (req, res) => {
     if (product) {
       const pdfDoc = new PDFDocument();
       const pdf = new Date().toISOString() + '-' + 'myTestPDF.pdf';
+
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename=${pdf}`);
+
       pdfDoc.pipe(fs.createWriteStream(path.join(path.dirname(process.mainModule.filename), 'src/public/files/images', pdf)));
       pdfDoc.pipe(res);
       pdfDoc.text('Hello World!');
@@ -464,12 +481,14 @@ exports.deleteProduct = async (req, res) => {
     if (product) {
       const userData = await model('user').find();
       count = 0;
+
       userData.forEach(user => {
         if (user.products.pull(product)) {
           count++;
         }
         user.save();
       });
+
       const deleteProduct = await model('product').findByIdAndDelete(req.params.productId, { useFindAndModify: false });
       if (deleteProduct) {
         return res.json(responseObj(null, true, { 'message': (count > 0) ? 'Product deleted and cascaded successfully!' : 'Product deleted successfully!' }));

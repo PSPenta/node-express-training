@@ -32,6 +32,7 @@ exports.getUsers = async (req, res) => {
       page: req.query.page ? req.query.page : 1,     // Default 1
       paginate: 4                                    // Default 25
     });
+
     users.page = req.query.page ? req.query.page : 1;
     users.limit = 4;
     if (users) {
@@ -56,6 +57,7 @@ exports.getUser = async (req, res) => {
         attributes: ['fname', 'mname', 'lname']
       }]
     });
+
     if (user.length) {
       return res.json(responseObj(null, true, user));
     } else {
@@ -73,6 +75,7 @@ exports.addUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const user = await model('User').findAll({
       where: {
         [Op.or]: [
@@ -81,6 +84,7 @@ exports.addUser = async (req, res) => {
         ]
       }
     });
+
     if (!user.length) {
       const hashedPassword = await hash(req.body.password, 256);
       const user = await model('User').create({
@@ -90,12 +94,14 @@ exports.addUser = async (req, res) => {
         api_token: generateRandomString(),
         api_token_created_at: currentDateTime().format('Y-m-d H:M:S')
       });
+
       if (user) {
         const profile = await user.createProfile({
           fname: req.body.fname,
           mname: req.body.mname,
           lname: req.body.lname
         });
+
         if (profile) {
           sendMail(
             req.body.email,
@@ -110,6 +116,7 @@ exports.addUser = async (req, res) => {
               Thank you for joining us. Good luck.<br>
             </p>`
           ).then(() => console.log('Email sent successfully!')).catch(err => console.error(err));
+
           return res.status(201).json(responseObj(null, true, { 'message': 'User added successfully!' }));
         } else {
           return res.status(404).json(responseObj('Could not create profile for user!'));
@@ -132,6 +139,7 @@ exports.updateUser = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const user = await model('User').findAll({
       where: {
         [Op.or]: [
@@ -140,6 +148,7 @@ exports.updateUser = async (req, res) => {
         ]
       }
     });
+
     if (!user.length || user[0].id == parseInt(req.params.userId)) {
       const user = await model('User').findAll({ where: { id: parseInt(req.params.userId) } });
       if (user && user.length) {
@@ -150,6 +159,7 @@ exports.updateUser = async (req, res) => {
         user[0].api_token = generateRandomString();
         user[0].api_token_created_at = currentDateTime().format('Y-m-d H:M:S');
         user[0].save();
+
         const profile = await user[0].getProfile();
         if (profile) {
           profile.fname = req.body.fname;
@@ -163,6 +173,7 @@ exports.updateUser = async (req, res) => {
             lname: req.body.lname
           });
         }
+
         if (profile || newProfile) {
           return res.status(201).json(responseObj(null, true, { 'message': 'User updated successfully!' }));
         } else {
@@ -205,6 +216,7 @@ exports.getAllProducts = async (req, res) => {
       page: req.query.page ? req.query.page : 1,
       paginate: 4
     });
+
     products.page = req.query.page ? req.query.page : 1;
     products.limit = 4;
     return res.json(responseObj(null, true, products, true));
@@ -227,6 +239,7 @@ exports.getProduct = async (req, res) => {
         }
       }]
     });
+
     if (userProducts.length) {
       if (userProducts[0].products.length) {
         return res.json(responseObj(null, true, userProducts));
@@ -248,11 +261,13 @@ exports.createProduct = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const product = await model('Product').create({
       name: req.body.name,
       price: req.body.price,
       description: req.body.description
     });
+
     if (product) {
       return res.status(201).json(responseObj(null, true, { 'message': 'Product added successfully!' }));
     } else {
@@ -270,6 +285,7 @@ exports.updateProduct = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const product = await model('Product').update(
       {
         name: req.body.name,
@@ -280,6 +296,7 @@ exports.updateProduct = async (req, res) => {
         where: { id: parseInt(req.params.productId) }
       }
     );
+
     if (product) {
       return res.status(201).json(responseObj(null, true, { 'message': 'Product updated successfully!' }));
     } else {
@@ -311,6 +328,7 @@ exports.addNewProduct = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(422).json(responseObj(errors.array()));
     }
+
     const user = await model('User').findAll({ where: { id: parseInt(req.params.userId) } });
     if (user.length) {
       const product = await user[0].createProduct({
@@ -318,6 +336,7 @@ exports.addNewProduct = async (req, res) => {
         price: req.body.price,
         description: req.body.description,
       });
+
       if (product) {
         return res.status(201).json(responseObj(null, true, { 'message': 'Product created successfully!' }));
       } else {
@@ -389,8 +408,10 @@ exports.generatePDF = async (req, res) => {
     if (product.length) {
       const pdfDoc = new PDFDocument();
       const pdf = new Date().toISOString() + '-' + 'myTestPDF.pdf';
+
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `inline; filename=${pdf}`);
+
       pdfDoc.pipe(fs.createWriteStream(path.join(path.dirname(process.mainModule.filename), 'src/public/files/images', pdf)));
       pdfDoc.pipe(res);
       pdfDoc.text('Hello World!');
