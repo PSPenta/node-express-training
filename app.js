@@ -112,7 +112,7 @@ mongoConnect(() => {
 });
 
 // Connect to Mongoose ODM
-mongoose.connect(process.env.DB_URL+process.env.DB_NAME, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
   .then(() => {
     console.info(`Connection has been established successfully using mongoose ODM with '${process.env.DB_NAME}' database.`);
     fs.readdirSync(__dirname + '/src/models/Mongoose').forEach(file => require(__dirname + '/src/models/Mongoose/' + file));
