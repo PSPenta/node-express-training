@@ -31,7 +31,7 @@ If you need theoratical information, you can read [this](https://docs.google.com
 ## Setup
 1. Clone the repository
     ```sh
-    git clone https://github.com/pspritesh/node-express-training.git
+    git clone https://github.com/PSPenta/node-express-training.git
     ```
 2. Go to root directory and install all modules
    ```sh
