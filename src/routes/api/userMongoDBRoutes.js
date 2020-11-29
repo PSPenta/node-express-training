@@ -1,5 +1,4 @@
-const express = require('express');
-const router = new express.Router();
+const router = require('express').Router();
 
 const userMongoDBController = require('../../controllers/userMongoDBController');
 
@@ -18,4 +17,4 @@ router.post('/', userMongoDBController.addUser);
 router.put('/:id', userMongoDBController.updateUser);
 router.delete('/:id', userMongoDBController.deleteUser);
 
-module.exports = router
+module.exports = router;

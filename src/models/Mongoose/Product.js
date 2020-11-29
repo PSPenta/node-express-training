@@ -30,4 +30,4 @@ const productSchema = new Schema({
 });
 
 productSchema.plugin(aggregatePaginate);
-module.exports = model('product', productSchema)
+module.exports = model('product', productSchema);

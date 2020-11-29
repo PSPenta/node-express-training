@@ -1,5 +1,4 @@
-const express = require('express');
-const router = new express.Router();
+const router = require('express').Router();
 
 router.use('/', (req, res) => res.render('admin/admin', {title:'Admin', message:'Admin section!'}));
 
@@ -8,4 +7,4 @@ router.use('/', (req, res) => res.render('admin/admin', {title:'Admin', message:
 //   res.render('admin/admin', {title:'Admin', message:'Admin section!', errorMsg: req.flash('error')});
 // });
 
-module.exports = router
+module.exports = router;

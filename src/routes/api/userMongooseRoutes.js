@@ -1,6 +1,5 @@
-const express = require('express');
 const { check } = require('express-validator');
-const router = new express.Router();
+const router = require('express').Router();
 
 const userMongooseController = require('../../controllers/userMongooseController');
 const { imgUploadToS3 } = require('../../helpers/awsHelper');
@@ -130,4 +129,4 @@ router.route('/:userId')
 
 router.get('/:productId/pdf', userMongooseController.generatePDF);
 
-module.exports = router
+module.exports = router;

@@ -46,4 +46,4 @@ const userSchema = new Schema({
 });
 
 userSchema.plugin(aggregatePaginate);
-module.exports = model('user', userSchema)
+module.exports = model('user', userSchema);

@@ -1,7 +1,6 @@
-const express = require('express');
-const router = new express.Router();
+const router = require('express').Router();
 
-const auth = require('../middlewares/auth');
+// const auth = require('../middlewares/auth');
 
 router.use('/products', require('./api/productRoutes'));
 // router.use('/usermysql', auth.sqlAuthorize, require('./api/userMySQLRoutes'));
@@ -13,4 +12,4 @@ router.use('/usersequelize', require('./api/userSequelizeRoutes'));
 router.use('/usermongodb', require('./api/userMongoDBRoutes'));
 router.use('/usermongoose', require('./api/userMongooseRoutes'));
 
-module.exports = router
+module.exports = router;

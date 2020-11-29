@@ -1,5 +1,4 @@
-const express = require('express');
-const router = new express.Router();
+const router = require('express').Router();
 
 const auth = require('../middlewares/auth');
 const error404Controller = require('../controllers/error404Controller');
@@ -92,4 +91,4 @@ router.use('/', require('./webRoutes'));
 // Handles 404 requests
 router.use(error404Controller.error404);
 
-module.exports = router
+module.exports = router;

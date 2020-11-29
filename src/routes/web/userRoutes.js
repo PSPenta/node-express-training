@@ -1,5 +1,4 @@
-const express = require('express');
-const router = new express.Router();
+const router = require('express').Router();
 
 const myController = require('../../controllers/myController');
 const demoController = require('../../controllers/demoController');
@@ -11,4 +10,4 @@ router.use('/write', demoController.write_file);
 
 router.get('/', (req, res) => res.send('<head><title>Node-Express APIs</title></head><body><h1>Node-Express API Server</h1></body>'));
 
-module.exports = router
+module.exports = router;
