@@ -115,7 +115,7 @@ exports.addUser = async (req, res) => {
               Password: ${req.body.password}<br>
               Thank you for joining us. Good luck.<br>
             </p>`
-          ).then(() => console.log('Email sent successfully!')).catch(err => console.error(err));
+          ).then(() => console.info('Email sent successfully!')).catch(err => console.error(err));
 
           return res.status(201).json(responseObj(null, true, { 'message': 'User added successfully!' }));
         } else {

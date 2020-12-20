@@ -7,7 +7,7 @@ exports.executePHP = (req, res) => {
       console.error(err);
       return;
     }
-    console.log(stdout);
+    console.info(stdout);
     return res.send(stdout);
   });
 }
@@ -18,7 +18,7 @@ exports.executeJar = (req, res) => {
       console.error(err);
       return;
     }
-    console.log(stdout);
+    console.info(stdout);
     return res.send(stdout);
   });
 }

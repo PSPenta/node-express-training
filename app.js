@@ -96,20 +96,14 @@ sequelizeRelations();
 // Sequelize auto-create missing tables using sync()
 sequelize.sync()
   .then(() => {
-    const server = app.listen(app.get('port'), () => {
-      console.info(`Find the server at: ${app.get('app URL')}`);
-    });
+    const server = app.listen(app.get('port'), () => console.info(`Find the server at: ${app.get('app URL')}`));
     const io = require('./src/helpers/socketHelper').init(server);
-    io.on('connection', () => {
-      console.log('Client connected!');
-    });
+    io.on('connection', () => console.info('Client connected!'));
   })
   .catch(err => console.error(err));
 
 // Connect to MongoDB
-mongoConnect(() => {
-  console.info(`Connection has been established successfully with '${process.env.DB_NAME}' mongo database.`);
-});
+mongoConnect(() => console.info(`Connection has been established successfully with '${process.env.DB_NAME}' mongo database.`));
 
 // Connect to Mongoose ODM
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
