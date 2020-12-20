@@ -1,16 +1,22 @@
-const AWS = require('aws-sdk');
+const { S3, SES } = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 
-const s3 = new AWS.S3({
+const AWS_S3 = new S3({
   accessKeyId: process.env.ACCESS_KEY,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
   region: process.env.S3_REGION
 });
 
+const AWS_SES = SES({
+  accessKeyId: process.env.ACCESS_KEY,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: process.env.SES_REGION
+});
+
 exports.imgUploadToS3 = multer({
   'storage': multerS3({
-    's3': s3,
+    's3': AWS_S3,
     'acl': 'public-read',
     'cacheControl': 'max-age=31536000',
     'bucket': process.env.ASSET_BUCKET,
@@ -46,3 +52,27 @@ exports.imgUploadToS3 = multer({
     }
   }
 });
+
+exports.sendMail = (to, from, subject, html) => {
+  return AWS_SES.sendEmail({
+    Source: from,
+    Destination: {
+      ToAddresses: [
+        to
+      ],
+    },
+    ReplyToAddresses: [],
+    Message: {
+      Body: {
+        Html: {
+          Charset: 'UTF-8',
+          Data: html
+        },
+      },
+      Subject: {
+        Charset: 'UTF-8',
+        Data: subject
+      }
+    }
+  }).promise();
+}
