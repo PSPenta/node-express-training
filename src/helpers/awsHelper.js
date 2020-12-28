@@ -8,7 +8,7 @@ const AWS_S3 = new S3({
   region: process.env.S3_REGION
 });
 
-const AWS_SES = SES({
+const AWS_SES = new SES({
   accessKeyId: process.env.ACCESS_KEY,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
   region: process.env.SES_REGION
